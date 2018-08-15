@@ -1,0 +1,39 @@
+{
+  "name": "lambda-starter-kit",
+  "version": "1.0.0",
+  "description": "Started kit for deploying lambda to aws",
+  "main": "server/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+  },
+  "keywords": [
+    "lambda",
+    "aws"
+  ],
+  "author": "Ashwin Aggarwal",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^6.0.0",
+    "request-promise": "^4.2.2",
+    "serverless": "^1.30.0",
+    "serverless-domain-manager": "^2.6.0",
+    "serverless-plugin-aws-alerts": "^1.2.4",
+    "winston": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-rc.1",
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
+    "@babel/register": "^7.0.0-rc.1",
+    "babel-eslint": "^8.2.6",
+    "eslint": "^5.3.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "express": "^4.16.3",
+    "pre-commit": "^1.2.2",
+    "zip": "^1.2.0"
+  }
+}
