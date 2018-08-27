@@ -78,3 +78,7 @@ testGET:
 If you pass in correct `ENV` variable to `make` target, it will pick up the corresponding `.env` file for the build. Specifying `development` will default to `.env`
 
 For e.g. you can have `staging.env` file in project root directory, to build package for staging `make package ENV='staging'`
+
+## demo
+
+[Example](./docs/example.md) - See the logs and whole packaging and deploying process.
