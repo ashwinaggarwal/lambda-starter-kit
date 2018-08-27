@@ -1,0 +1,31 @@
+service: lambda-starter-kit
+provider:
+  name: aws
+  runtime: nodejs8.10
+  memorySize: 256
+  timeout: 60
+  region: null
+package:
+  artifact: ./package.zip
+functions:
+  testGET:
+    handler: src/functions/test/index.get
+    events:
+      - http:
+          method: get
+          path: /test
+    environment:
+      NODE_ENV: production
+  testPOST:
+    handler: src/functions/test/index.post
+    events:
+      - http:
+          cors: true
+          method: post
+          path: /test
+  test1GET:
+    handler: src/functions/test1/index.get
+    events:
+      - http:
+          method: get
+          path: /test1

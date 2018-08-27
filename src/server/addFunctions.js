@@ -1,13 +1,35 @@
-import { lstatSync, readdirSync } from 'fs';
 import path from 'path';
 import { log, logError } from '../common/utils/logger';
+import { FUNCTIONS_PATH, getFunctionNames } from '../common/utils/functions';
+
+const withCallback = (func, event, context) => {
+  return new Promise((resolve, reject) => {
+    const callback = (err, response) => {
+      if(err) {
+        reject(err);
+      }
+      resolve(response);
+    };
+
+    try {
+      func(event, context, callback);
+    } catch (ex) {
+      reject(ex);
+    }
+  });
+}
 
 const decorateFunction = (functionName, func) => async (request, response) => {
   try {
     log(`[${functionName}]: Executing`);
-    const funcResponse = await func(request.query);
-    log(`[${functionName}]: Response: ${JSON.stringify(funcResponse)}`);
-    response.status(200).send(funcResponse);
+    const {
+      statusCode,
+      body,
+    } = await withCallback(func, request, {
+      LOCAL_EXECUTION_ENV: true
+    });
+    log(`[${functionName}]:[StatusCode:${statusCode}]: Response : ${JSON.stringify(body)}`);
+    response.status(statusCode).send(body);
   } catch (ex) {
     logError(`[${functionName}]`, ex.stack);
     response
@@ -16,18 +38,14 @@ const decorateFunction = (functionName, func) => async (request, response) => {
   }
 }
 
-export const addFunctions = app => {
-  const functionsPath = path.join(process.cwd(), 'src/functions');
-  const functions = readdirSync(functionsPath).filter(functionPath => {
-    const absoluteFunctionPath = path.join(functionsPath, functionPath);
-    return lstatSync(absoluteFunctionPath).isDirectory();
-  });
+export const addFunctions = async (app) => {
+  const functions = getFunctionNames();
 
   functions.forEach(functionName => {
-    const absoluteFunctionPath = path.join(functionsPath, functionName, 'index.js');
-    const funcMethods = require(absoluteFunctionPath)[functionName];
-    for(let method in funcMethods) {
-      app[method](`/${functionName}`, decorateFunction(functionName, funcMethods[method]));
-    }
+    const absoluteFunctionPath = path.join(FUNCTIONS_PATH, functionName, 'index.js');
+    const funcMethods = require(absoluteFunctionPath);
+    Object.keys(funcMethods).forEach(funcMethod => {
+      app[funcMethod](`/${functionName}`, decorateFunction(functionName, funcMethods[funcMethod]));
+    });
   });
 };

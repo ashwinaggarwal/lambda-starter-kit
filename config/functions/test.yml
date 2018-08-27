@@ -1,0 +1,7 @@
+testGET:
+  environment:
+    NODE_ENV: production
+testPOST:
+  events:
+    - http:
+        cors: true
