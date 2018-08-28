@@ -8,24 +8,24 @@ provider:
 package:
   artifact: ./package.zip
 functions:
-  testGET:
-    handler: src/functions/test/index.get
-    events:
-      - http:
-          method: get
-          path: /test
-    environment:
-      NODE_ENV: production
-  testPOST:
-    handler: src/functions/test/index.post
-    events:
-      - http:
-          cors: true
-          method: post
-          path: /test
-  test1GET:
-    handler: src/functions/test1/index.get
-    events:
-      - http:
-          method: get
-          path: /test1
+  - testGET:
+      environment:
+        NODE_ENV: production
+      events:
+        - http:
+            method: get
+            path: /test
+      handler: src/functions/test/index.get
+  - testPOST:
+      events:
+        - http:
+            cors: true
+            method: post
+            path: /test
+      handler: src/functions/test/index.post
+  - test1GET:
+      events:
+        - http:
+            method: get
+            path: /test1
+      handler: src/functions/test1/index.get

@@ -18,4 +18,3 @@ const authorize = async (request, response, next) => {
 };
 
 export default authorize;
-

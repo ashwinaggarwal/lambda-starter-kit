@@ -3,12 +3,18 @@ import fs from 'fs';
 import url from 'url';
 import { promisify } from 'util';
 import { performance } from 'perf_hooks'; /* eslint import/no-unresolved: 0, import/extensions: 0 */
-import { log, logError } from './logger';
+import { log } from './logger';
 
 export const toBool = val => (`${val}` === 'true');
 export const readFile = promisify(fs.readFile);
 export const writeFile = promisify(fs.writeFile);
 export const removeFile = promisify(fs.unlink);
+
+export const flatmap = (arr) => {
+  return arr.reduce((finalArr, [...elements]) => {
+    return finalArr.concat(elements);
+  }, []);
+};
 
 export const fetch = (requestObj) => {
   const {

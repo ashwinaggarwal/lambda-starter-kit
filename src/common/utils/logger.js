@@ -1,16 +1,17 @@
-import { config, format, createLogger, transports } from 'winston';
+import {
+  config, format, createLogger, transports
+} from 'winston';
 
-const getFormattedMessage = msg =>
-  [].concat(msg).map((message) => {
-    switch (typeof message) {
-      case 'string':
-        return message;
-      case 'object':
-        return Array.isArray(message) ? getFormattedMessage(message) : JSON.stringify(message);
-      default:
-        return message;
-    }
-  }).join(' ');
+const getFormattedMessage = msg => [].concat(msg).map((message) => {
+  switch (typeof message) {
+    case 'string':
+      return message;
+    case 'object':
+      return Array.isArray(message) ? getFormattedMessage(message) : JSON.stringify(message);
+    default:
+      return message;
+  }
+}).join(' ');
 
 const logger = createLogger({
   level: 'info',
