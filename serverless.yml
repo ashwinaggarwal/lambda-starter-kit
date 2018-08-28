@@ -4,7 +4,7 @@ provider:
   runtime: nodejs8.10
   memorySize: 256
   timeout: 60
-  region: null
+  region: eu-west-1
 package:
   artifact: ./package.zip
 functions:
