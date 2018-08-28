@@ -70,5 +70,8 @@ export const getFunctionsConfig = async () => {
   const functionNames = getFunctionNames();
   const functionsConfig = await Promise.all(functionNames.map(getFunctionConfig));
 
-  return flatmap(functionsConfig);
+  return flatmap(functionsConfig).reduce((config, functionConfig) => ({
+    ...config,
+    ...functionConfig
+  }), {});
 };
