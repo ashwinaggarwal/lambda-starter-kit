@@ -24,9 +24,6 @@
     "express": "^4.16.3",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
-    "serverless": "^1.30.0",
-    "serverless-domain-manager": "^2.6.0",
-    "serverless-plugin-aws-alerts": "^1.2.4",
     "yaml": "^1.0.0-rc.7",
     "winston": "^3.0.0"
   },
@@ -38,7 +35,6 @@
     "@babel/preset-env": "^7.0.0-rc.1",
     "@babel/register": "^7.0.0-rc.1",
     "babel-eslint": "^8.2.6",
-    "deepmerge": "^2.1.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-airbnb-base": "^13.1.0",
@@ -46,6 +42,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "eslint-plugin-react": "^7.11.1",
     "pre-commit": "^1.2.2",
+    "serverless": "^1.30.0",
     "zip": "^1.2.0"
   }
 }

@@ -15,7 +15,7 @@ start:
 	node --inspect --debug=5859 ./src/server/index.js
 
 clean:
-	@rm -rf dist package.zip node_modules serverless.yml
+	@rm -rf dist package.zip serverless.yml
 
 docker:
 ifndef DOCKER_PATH
@@ -48,8 +48,9 @@ endif
 
 docker-copy-node-node_modules: CONTAINER_NAME = $(PROJECT_NAME)-node-modules-temp
 docker-copy-node-node_modules: docker-build
+	@mkdir -p dist
 	@docker create --name=$(CONTAINER_NAME) $(PROJECT_NAME):$(PROJECT_VERSION)
-	@docker cp $(CONTAINER_NAME):/usr/src/app/node_modules ./node_modules
+	@docker cp $(CONTAINER_NAME):/usr/src/app/node_modules ./dist/node_modules
 	@docker rm $(CONTAINER_NAME)
 
 docker-stop:
@@ -60,12 +61,11 @@ docker-rm: docker-stop
 
 build: BUILD_ENV = $(shell if [ "$$ENV" = "development" ]; then echo '';  else echo $$ENV; fi)
 build: clean docker-copy-node-node_modules
-	@mkdir dist
+	@mkdir -p dist
 	@./node_modules/.bin/babel ./src --out-dir dist/src --copy-files --quiet
 	@./node_modules/.bin/babel ./scripts --out-dir dist/scripts --copy-files --quiet
 	@cp ./$(BUILD_ENV).env ./dist/.env
 	@cp ./package.json ./dist/
-	@cp -rf ./node_modules ./dist/
 	@./node_modules/.bin/babel-node ./dist/scripts/build/buildServerlessConfig.js
 
 package: build
