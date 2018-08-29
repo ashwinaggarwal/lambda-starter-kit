@@ -7,11 +7,20 @@ import { getFunctionsConfig } from './getFunctionsConfig';
 const cwd = process.cwd();
 
 const configureProvider = async (config) => {
-  config.provider = {
-    ...config.provider,
-    region: process.env.AWS_REGION
+  const providerConfigRaw = await readFile(
+    path.join(cwd, 'config/provider.yml'),
+    'utf8'
+  );
+  const providerConfig = YAML.parse(providerConfigRaw);
+
+  return {
+    ...config,
+    ...providerConfig,
+    provider: {
+      ...providerConfig.provider,
+      region: process.env.AWS_REGION
+    }
   };
-  return config;
 };
 
 const configureFunctions = async (config) => {
@@ -24,6 +33,18 @@ const configureFunctions = async (config) => {
 };
 
 const configureResources = async (config) => {
+  const resourcesConfigRaw = await readFile(
+    path.join(cwd, 'config/resources.yml'),
+    'utf8'
+  );
+
+  if (resourcesConfigRaw.trim()) {
+    const resourcesConfig = YAML.parse(resourcesConfigRaw || '');
+    return {
+      ...config,
+      resources: resourcesConfig
+    };
+  }
   return config;
 };
 
@@ -39,13 +60,8 @@ const configureServerlessYml = async (config) => {
 };
 
 export const generateServerlessConfig = async () => {
-  const serverlessConfigBaseFilePath = path.join(cwd, 'config/provider.yml');
-
-  const serverlessConfigBaseFileRaw = await readFile(serverlessConfigBaseFilePath, 'utf8');
-
   const compiledServerlessYml = await configureServerlessYml({
-    service: packageJson.name,
-    ...YAML.parse(serverlessConfigBaseFileRaw)
+    service: packageJson.name
   });
 
   await writeFile(
