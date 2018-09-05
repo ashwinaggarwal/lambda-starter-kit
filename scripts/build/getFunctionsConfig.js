@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import YAML from 'yaml';
+import yaml from 'js-yaml';
 import { readFile, flatmap } from '../../src/common/utils';
 import { getFunctionNames, FUNCTIONS_PATH } from '../../src/common/utils/functions';
 
@@ -42,7 +42,7 @@ const getFunctionPreConfig = async (functionName) => {
 
   if (fs.existsSync(functionPreConfigPath)) {
     const functionSpecificConfigRaw = await readFile(functionPreConfigPath, 'utf8');
-    return YAML.parse(functionSpecificConfigRaw);
+    return yaml.safeLoad(functionSpecificConfigRaw);
   }
   return {};
 };

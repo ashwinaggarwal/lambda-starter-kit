@@ -1,5 +1,5 @@
 import path from 'path';
-import YAML from 'yaml';
+import yaml from 'js-yaml';
 import packageJson from '../../package.json';
 import { readFile, writeFile } from '../../src/common/utils';
 import { getFunctionsConfig } from './getFunctionsConfig';
@@ -11,7 +11,7 @@ const configureProvider = async (config) => {
     path.join(cwd, 'config/provider.yml'),
     'utf8'
   );
-  const providerConfig = YAML.parse(providerConfigRaw);
+  const providerConfig = yaml.safeLoad(providerConfigRaw);
 
   return {
     ...config,
@@ -39,7 +39,7 @@ const configureResources = async (config) => {
   );
 
   if (resourcesConfigRaw.trim()) {
-    const resourcesConfig = YAML.parse(resourcesConfigRaw || '');
+    const resourcesConfig = yaml.safeLoad(resourcesConfigRaw || '');
     return {
       ...config,
       resources: resourcesConfig
@@ -66,6 +66,6 @@ export const generateServerlessConfig = async () => {
 
   await writeFile(
     path.join(cwd, 'serverless.yml'),
-    YAML.stringify(compiledServerlessYml)
+    yaml.safeDump(compiledServerlessYml)
   );
 };
