@@ -21,20 +21,20 @@ const withCallback = (func, event, context) => {
 
 const decorateFunction = (functionName, func) => async (request, response) => {
   try {
-    log(`[${functionName}]: Executing`);
+    log(`[${functionName}]`, 'Executing');
     const {
       statusCode,
       body
     } = await withCallback(func, request, {
       LOCAL_EXECUTION_ENV: true
     });
-    log(`[${functionName}]:[StatusCode:${statusCode}]: Response : ${JSON.stringify(body)}`);
+    log(`[${functionName}]`, statusCode, JSON.stringify(body));
     response.status(statusCode).send(body);
   } catch (ex) {
-    logError(`[${functionName}]`, ex.stack);
+    logError(`[${functionName}]`, ex);
     response
       .status(500)
-      .send(JSON.stringify(ex.stack));
+      .send(ex.stack);
   }
 };
 

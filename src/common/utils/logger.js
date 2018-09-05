@@ -2,27 +2,17 @@ import {
   config, format, createLogger, transports
 } from 'winston';
 
-const getFormattedMessage = msg => [].concat(msg).map((message) => {
-  switch (typeof message) {
-    case 'string':
-      return message;
-    case 'object':
-      return Array.isArray(message) ? getFormattedMessage(message) : JSON.stringify(message);
-    default:
-      return message;
-  }
-}).join(' ');
-
 const logger = createLogger({
   level: 'info',
   levels: config.syslog.levels,
   exitOnError: false,
   format: format.combine(
+    format.colorize(),
     format((info) => {
-      info.message = getFormattedMessage(info.message);
+      info.message = [].concat(info.message).join(' ');
       return info;
     })(),
-    format.json()
+    format.simple()
   ),
   transports: [
     new transports.Console()
