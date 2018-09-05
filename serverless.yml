@@ -2,12 +2,24 @@ service: lambda-starter-kit
 provider:
   name: aws
   runtime: nodejs8.10
-  memorySize: 128
-  timeout: 10
+  memorySize: 256
+  timeout: 60
   region: eu-west-1
 package:
   artifact: ./package.zip
 functions:
+  kinesisTestGET:
+    events:
+      - http:
+          method: get
+          path: /kinesisTest
+      - stream:
+          type: kinesis
+          arn:
+            'Fn::GetAtt':
+              - LambdaStarterKitKinesisStream
+              - Arn
+    handler: src/functions/kinesisTest/index.get
   testGET:
     environment:
       NODE_ENV: production
@@ -23,9 +35,50 @@ functions:
           method: post
           path: /test
     handler: src/functions/test/index.post
-  test1GET:
-    events:
-      - http:
-          method: get
-          path: /test1
-    handler: src/functions/test1/index.get
+resources:
+  Resources:
+    LambdaStarterKitKinesisStream:
+      Type: 'AWS::Kinesis::Stream'
+      Properties:
+        Name: LambdaStarterKitKinesisStream
+        ShardCount: 1
+    CWtoKinesisSubscription:
+      Type: 'AWS::Logs::SubscriptionFilter'
+      Properties:
+        DestinationArn:
+          'Fn::GetAtt':
+            - LambdaStarterKitKinesisStream
+            - Arn
+        LogGroupName:
+          Ref: TestGETLogGroup
+        FilterPattern: '[...]'
+        RoleArn:
+          'Fn::GetAtt':
+            - CWLogsToKinesisRole
+            - Arn
+    CWLogsToKinesisRole:
+      Type: 'AWS::IAM::Role'
+      Properties:
+        RoleName: LambdaStarterKitCWLogsToKinesisRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - logs.amazonaws.com
+              Action:
+                - 'sts:AssumeRole'
+        Policies:
+          - PolicyName: CWLogsToKinesisRolePolicy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - 'kinesis:PutRecords'
+                    - 'kinesis:PutRecord'
+                  Resource:
+                    'Fn::GetAtt':
+                      - LambdaStarterKitKinesisStream
+                      - Arn

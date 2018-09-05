@@ -1,0 +1,48 @@
+Resources:
+  LambdaStarterKitKinesisStream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: LambdaStarterKitKinesisStream
+      ShardCount: 1
+
+  CWtoKinesisSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn:
+        Fn::GetAtt:
+          - LambdaStarterKitKinesisStream
+          - Arn
+      LogGroupName:
+        Ref: TestGETLogGroup
+      FilterPattern: "[...]"
+      RoleArn:
+        Fn::GetAtt:
+          - CWLogsToKinesisRole
+          - Arn
+
+  CWLogsToKinesisRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaStarterKitCWLogsToKinesisRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - logs.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: CWLogsToKinesisRolePolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'kinesis:PutRecords'
+                  - 'kinesis:PutRecord'
+                Resource:
+                  Fn::GetAtt:
+                    - LambdaStarterKitKinesisStream
+                    - Arn

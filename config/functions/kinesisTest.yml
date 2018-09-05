@@ -1,0 +1,8 @@
+kinesisTestGET:
+  events:
+    - stream:
+        type: kinesis
+        arn:
+          Fn::GetAtt:
+            - LambdaStarterKitKinesisStream
+            - Arn
