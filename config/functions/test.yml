@@ -1,7 +1,11 @@
 testGET:
   environment:
     NODE_ENV: production
+    DEBUG: true
 testPOST:
+  environment:
+      NODE_ENV: production
+      DEBUG: true
   events:
     - http:
         cors: true

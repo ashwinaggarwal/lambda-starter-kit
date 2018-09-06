@@ -2,7 +2,7 @@ service: lambda-starter-kit
 provider:
   name: aws
   runtime: nodejs8.10
-  memorySize: 256
+  memorySize: 128
   timeout: 60
   region: eu-west-1
 package:
@@ -23,12 +23,16 @@ functions:
   testGET:
     environment:
       NODE_ENV: production
+      DEBUG: true
     events:
       - http:
           method: get
           path: /test
     handler: src/functions/test/index.get
   testPOST:
+    environment:
+      NODE_ENV: production
+      DEBUG: true
     events:
       - http:
           cors: true

@@ -7,7 +7,6 @@ const logger = createLogger({
   levels: config.syslog.levels,
   exitOnError: false,
   format: format.combine(
-    format.colorize(),
     format((info) => {
       info.message = [].concat(info.message).join(' ');
       return info;
