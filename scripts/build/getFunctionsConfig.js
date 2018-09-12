@@ -6,7 +6,13 @@ import { getFunctionNames, FUNCTIONS_PATH } from '../../src/common/utils/functio
 
 const cwd = process.cwd();
 
-const addHttpEventToMethodPreConfig = (preConfig = {}) => {
+const HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH'];
+
+const addHttpEventToMethodPreConfig = (preConfig = {}, isHttpMethod) => {
+  if (!isHttpMethod) {
+    return preConfig;
+  }
+
   const hasHttpEvent = preConfig
     && preConfig.events
     && preConfig.events.filter(event => event.http).length;
@@ -19,20 +25,25 @@ const addHttpEventToMethodPreConfig = (preConfig = {}) => {
 
 const getFunctionMethodConfig = (functionName, functionPreConfig, functionSrcPath, method) => {
   const methodName = `${functionName}${method.toUpperCase()}`;
-  const methodPreConfig = addHttpEventToMethodPreConfig(functionPreConfig[methodName]);
+  const isHttpMethod = HTTP_METHODS.indexOf(method.toUpperCase()) !== -1;
+  const methodPreConfig = addHttpEventToMethodPreConfig(
+    functionPreConfig[methodName], isHttpMethod
+  );
 
   return {
     [methodName]: {
       ...methodPreConfig,
       handler: `${functionSrcPath}/index.${method}`,
-      events: methodPreConfig.events.map(event => (!event.http ? event : {
-        ...event,
-        http: {
-          ...event.http,
-          method,
-          path: `/${functionName}`
-        }
-      }))
+      events: !isHttpMethod
+        ? methodPreConfig.events
+        : methodPreConfig.events.map(event => (!event.http ? event : {
+          ...event,
+          http: {
+            ...event.http,
+            method,
+            path: `/${functionName}`
+          }
+        }))
     }
   };
 };
@@ -60,6 +71,7 @@ const getFunctionConfig = async (functionName) => {
       funcRelativePath,
       funcMethod
     );
+
     return functMethodConfig;
   }));
 
